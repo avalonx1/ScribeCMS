@@ -6,6 +6,7 @@ import PostList from './components/Dashboard/PostList';
 import CourseSeries from './components/Dashboard/CourseSeries';
 import MarkdownEditor from './components/Editor/MarkdownEditor';
 import PostDetail from './components/Reader/PostDetail';
+import { storageService } from './services/storageService';
 
 export default function App() {
   // Navigation & View States: 'dashboard' | 'editor' | 'reader' | 'courses'
@@ -20,6 +21,7 @@ export default function App() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dbStatus, setDbStatus] = useState('checking');
+  const [storageMode, setStorageMode] = useState('checking');
 
   // Filter States
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,61 +38,36 @@ export default function App() {
     }, 4500);
   };
 
-  // Fetch all initial data from PostgreSQL Backend
+  // Fetch all initial data via Dual-Mode Storage Service
   const fetchData = async () => {
     try {
       setLoading(true);
 
-      // 1. Health check
-      try {
-        const healthRes = await fetch('/api/health');
-        if (healthRes.ok) {
-          const healthData = await healthRes.json();
-          setDbStatus(healthData.status);
-        }
-      } catch {
-        setDbStatus('offline');
-      }
+      // 1. Connection check
+      const conn = await storageService.checkConnection();
+      setDbStatus(conn.status === 'connected' ? 'online' : 'offline');
+      setStorageMode(conn.mode);
 
       // 2. Fetch categories
-      const catRes = await fetch('/api/categories');
-      if (catRes.ok) {
-        const catData = await catRes.json();
-        setCategories(catData);
-      }
+      const catData = await storageService.getCategories();
+      setCategories(catData);
 
       // 3. Fetch courses
-      const courseRes = await fetch('/api/courses');
-      if (courseRes.ok) {
-        const courseData = await courseRes.json();
-        setCourses(courseData);
-      }
+      const courseData = await storageService.getCourses();
+      setCourses(courseData);
 
       // 4. Fetch stats
-      const statsRes = await fetch('/api/stats');
-      if (statsRes.ok) {
-        const statsData = await statsRes.json();
-        setStats(statsData);
-      }
+      const statsData = await storageService.getStats();
+      setStats(statsData);
 
       // 5. Fetch posts
-      let postUrl = '/api/posts?';
-      if (searchTerm) postUrl += `search=${encodeURIComponent(searchTerm)}&`;
-      if (selectedCategory && selectedCategory !== 'All' && selectedCategory !== 'Favorites') {
-        postUrl += `category=${encodeURIComponent(selectedCategory)}&`;
-      }
-      if (selectedCategory === 'Favorites') {
-        postUrl += `favorite=true&`;
-      }
-      if (selectedCourseFilter) {
-        postUrl += `course=${encodeURIComponent(selectedCourseFilter)}&`;
-      }
-
-      const postsRes = await fetch(postUrl);
-      if (postsRes.ok) {
-        const postsData = await postsRes.json();
-        setPosts(postsData);
-      }
+      const postsData = await storageService.getPosts({
+        search: searchTerm,
+        category: selectedCategory,
+        course: selectedCourseFilter,
+        favorite: selectedCategory === 'Favorites'
+      });
+      setPosts(postsData);
     } catch (err) {
       console.error('Error fetching data:', err);
     } finally {
@@ -102,47 +79,33 @@ export default function App() {
     fetchData();
   }, [searchTerm, selectedCategory, selectedCourseFilter]);
 
-  // Handle Save / Create / Update Post in PostgreSQL
+  // Handle Save / Create / Update Post
   const handleSavePost = async (postData) => {
     try {
-      let res;
-      if (postData.id) {
-        // Update
-        res = await fetch(`/api/posts/${postData.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(postData)
-        });
-      } else {
-        // Create
-        res = await fetch('/api/posts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(postData)
-        });
-      }
-
-      if (res.ok) {
-        const saved = await res.json();
-        showToast(postData.id ? 'Catatan berhasil diperbarui di PostgreSQL!' : 'Catatan materi baru berhasil disimpan!');
+      const saved = await storageService.savePost(postData);
+      if (saved) {
+        showToast(
+          postData.id
+            ? `Catatan berhasil diperbarui! (${storageMode === 'postgres' ? 'PostgreSQL' : 'Browser Storage'})`
+            : `Catatan materi baru berhasil disimpan! (${storageMode === 'postgres' ? 'PostgreSQL' : 'Browser Storage'})`
+        );
         await fetchData();
         setSelectedPost(saved);
         setActiveView('reader');
       } else {
-        const errData = await res.json();
-        alert('Gagal menyimpan: ' + (errData.error || 'Terjadi kesalahan'));
+        alert('Gagal menyimpan catatan');
       }
     } catch (err) {
-      alert('Error koneksi database: ' + err.message);
+      alert('Error saat menyimpan: ' + err.message);
     }
   };
 
   // Handle Delete Post
   const handleDeletePost = async (id) => {
     try {
-      const res = await fetch(`/api/posts/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        showToast('Catatan berhasil dihapus dari PostgreSQL');
+      const success = await storageService.deletePost(id);
+      if (success) {
+        showToast('Catatan berhasil dihapus');
         if (selectedPost?.id === id) {
           setSelectedPost(null);
           setActiveView('dashboard');
@@ -157,33 +120,43 @@ export default function App() {
   // Handle Toggle Favorite
   const handleToggleFavorite = async (id) => {
     try {
-      const res = await fetch(`/api/posts/${id}/favorite`, { method: 'PATCH' });
-      if (res.ok) {
-        const updated = await res.json();
+      const updated = await storageService.toggleFavorite(id);
+      if (updated) {
         setPosts(posts.map(p => p.id === id ? updated : p));
         if (selectedPost?.id === id) {
           setSelectedPost(updated);
         }
-        // Refresh stats
-        const statsRes = await fetch('/api/stats');
-        if (statsRes.ok) setStats(await statsRes.json());
+        const updatedStats = await storageService.getStats();
+        setStats(updatedStats);
       }
     } catch (err) {
       console.error(err);
     }
   };
 
-  // Handle Export all posts to JSON
+  // Handle Export all data to JSON
   const handleExportAll = () => {
-    const dataStr = JSON.stringify(posts, null, 2);
+    const backup = storageService.exportData();
+    const dataStr = JSON.stringify(backup, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `app_blog_backup_${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `scribecms_backup_${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    showToast('Backup seluruh database berhasil diunduh!');
+    showToast('Backup seluruh data berhasil diunduh!');
+  };
+
+  // Handle Import data from JSON
+  const handleImportData = async (jsonData) => {
+    try {
+      storageService.importData(jsonData);
+      showToast('Data berhasil di-import ke Browser Storage!');
+      await fetchData();
+    } catch (err) {
+      alert('Gagal import: ' + err.message);
+    }
   };
 
   // Handle New Post Trigger
@@ -214,21 +187,10 @@ export default function App() {
   // Handle Update Series (name, description, cover_image)
   const handleUpdateSeries = async (seriesData) => {
     try {
-      const res = await fetch('/api/courses/update', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(seriesData)
-      });
-      if (res.ok) {
-        const data = await res.json();
-        showToast(data.message || 'Series berhasil diperbarui');
-        await fetchData();
-        return true;
-      } else {
-        const err = await res.json();
-        alert('Gagal memperbarui series: ' + (err.error || 'Terjadi kesalahan'));
-        return false;
-      }
+      const res = await storageService.updateSeries(seriesData);
+      showToast(res.message || 'Series berhasil diperbarui');
+      await fetchData();
+      return true;
     } catch (err) {
       alert('Error: ' + err.message);
       return false;
@@ -269,7 +231,9 @@ export default function App() {
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         dbStatus={dbStatus}
+        storageMode={storageMode}
         onExportAll={handleExportAll}
+        onImportData={handleImportData}
       />
 
       {/* Main App Layout */}

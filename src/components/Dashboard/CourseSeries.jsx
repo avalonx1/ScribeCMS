@@ -20,6 +20,7 @@ import {
   Wand2
 } from 'lucide-react';
 import { CURATED_COVER_PRESETS, getPostFeatureImage } from '../../utils/imageHelper';
+import { storageService } from '../../services/storageService';
 
 export default function CourseSeries({ 
   courses = [], 
@@ -87,18 +88,14 @@ export default function CourseSeries({
     }
   };
 
-  // Upload file for cover image
+  // Upload file for cover image via Dual-Mode storageService
   const handleUploadCover = async (e, isNew = false) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('media', file);
-
     try {
-      const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (data.url) {
+      const data = await storageService.uploadImage(file);
+      if (data?.url) {
         if (isNew) {
           setNewSeriesCover(data.url);
         } else {

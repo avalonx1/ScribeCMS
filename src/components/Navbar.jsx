@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { 
   BookOpen, 
   Plus, 
   Search, 
   Download,
-  Database
+  Upload,
+  Database,
+  Globe
 } from 'lucide-react';
 
 export default function Navbar({ 
@@ -14,8 +16,29 @@ export default function Navbar({
   searchTerm, 
   setSearchTerm,
   dbStatus,
-  onExportAll
+  storageMode,
+  onExportAll,
+  onImportData
 }) {
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const json = JSON.parse(event.target.result);
+          if (onImportData) onImportData(json);
+        } catch {
+          alert('Format file JSON tidak valid');
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = ''; // Reset
+    }
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-[#0b0f19]/90 backdrop-blur-md">
       <div className="flex h-16 items-center justify-between px-6 sm:px-8 max-w-7xl mx-auto">
@@ -31,7 +54,9 @@ export default function Navbar({
           <div>
             <div className="flex items-center gap-2">
               <span className="font-semibold text-sm tracking-tight text-white">ScribeCMS</span>
-              <span className="text-[10px] text-zinc-500 font-mono">/ postgres</span>
+              <span className="text-[10px] text-zinc-500 font-mono">
+                {storageMode === 'postgres' ? '/ postgres' : '/ browser storage'}
+              </span>
             </div>
           </div>
         </div>
@@ -61,12 +86,41 @@ export default function Navbar({
         {/* Actions */}
         <div className="flex items-center gap-3">
           
-          {/* DB Indicator */}
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800/80 text-[11px]">
-            <span className={`h-1.5 w-1.5 rounded-full ${dbStatus === 'online' ? 'bg-emerald-400' : 'bg-rose-500'}`} />
-            <span className="text-zinc-400 font-mono">app_blog</span>
+          {/* Storage Mode Indicator */}
+          <div 
+            title={storageMode === 'postgres' ? 'Terhubung ke PostgreSQL Database lokal' : 'Berjalan di Browser Storage (Data tersimpan di browser Anda)'}
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800/80 text-[11px]"
+          >
+            {storageMode === 'postgres' ? (
+              <>
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                <span className="text-zinc-300 font-mono">PostgreSQL</span>
+              </>
+            ) : (
+              <>
+                <Globe className="h-3 w-3 text-cyan-400" />
+                <span className="text-cyan-400 font-mono">Browser Mode</span>
+              </>
+            )}
           </div>
 
+          {/* Import JSON */}
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleFileChange} 
+            accept=".json" 
+            className="hidden" 
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            title="Import Backup JSON"
+            className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-900 border border-zinc-800/80 transition-colors"
+          >
+            <Upload className="h-3.5 w-3.5" />
+          </button>
+
+          {/* Export JSON */}
           <button
             onClick={onExportAll}
             title="Export Backup JSON"
@@ -75,6 +129,7 @@ export default function Navbar({
             <Download className="h-3.5 w-3.5" />
           </button>
 
+          {/* New Post Button */}
           <button
             onClick={onNewPost}
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-zinc-950 bg-white hover:bg-zinc-200 transition-colors shadow-sm"

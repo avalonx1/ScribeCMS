@@ -30,6 +30,7 @@ import {
 import { convertCourseClipboardData } from '../../utils/htmlToMarkdown';
 import { CURATED_COVER_PRESETS, extractFirstImageFromMarkdown } from '../../utils/imageHelper';
 import VideoModal from './VideoModal';
+import { storageService } from '../../services/storageService';
 
 export default function MarkdownEditor({ 
   initialPost = null, 
@@ -167,18 +168,14 @@ export default function MarkdownEditor({
     }
   };
 
-  // Upload image to local server
+  // Upload image via Dual-Mode storageService
   const handleImageUpload = async (e, forCover = false) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('media', file);
-
     try {
-      const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (data.url) {
+      const data = await storageService.uploadImage(file);
+      if (data?.url) {
         if (forCover) {
           setCoverImage(data.url);
           if (showToast) showToast('Feature image berhasil di-upload!');
