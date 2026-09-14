@@ -74,6 +74,18 @@ export async function initDb() {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
+
+      CREATE TABLE IF NOT EXISTS notes (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255),
+        content TEXT NOT NULL,
+        color VARCHAR(50) DEFAULT 'default',
+        is_pinned BOOLEAN DEFAULT FALSE,
+        tags TEXT[] DEFAULT '{}',
+        position INTEGER DEFAULT 0,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
     `);
 
     // Check if categories are empty and seed default ones
@@ -163,6 +175,18 @@ export async function createPost(formData) {
         samplePost1.is_favorite,
         samplePost1.source_url
       ]);
+    }
+
+    // Check if notes are empty and seed sample sticky notes
+    const noteCheck = await client.query('SELECT COUNT(*) FROM notes');
+    if (parseInt(noteCheck.rows[0].count, 10) === 0) {
+      await client.query(`
+        INSERT INTO notes (title, content, color, is_pinned, tags, position) VALUES
+        ('💡 Ide Kursus: AI Agent & LLM Orchestration', 'Buat seri course baru tentang arsitektur AI Agent lokal menggunakan LangChain, Ollama, dan vector store.\n\nRencana modul:\n- [ ] Modul 1: Konsep Agentic AI\n- [x] Modul 2: Memory & Tool Calling\n- [ ] Modul 3: Local RAG dengan PostgreSQL pgvector\n\nCatatan:\nSiapkan repositori starter kit sebelum rekaman video modul 1.', 'amber', true, ARRAY['#ide', '#course', '#ai'], 0),
+        ('📌 Rencana Refactoring ScribeCMS', 'Task sprint minggu ini:\n- [x] Optimasi image compressor saat upload paste\n- [ ] Tambah keyboard shortcut Ctrl+S di editor\n- [ ] Export catatan ke format PDF & EPUB\n- [ ] Auto-backup berkala ke cloud storage\n\nCatatan evaluasi:\nPerforma rendering pada dokumen besar sudah jauh lebih cepat.', 'emerald', true, ARRAY['#todo', '#fitur'], 1),
+        ('🎯 Target Menulis Minggu Ini', '1. Selesaikan artikel tentang React 19 Compiler\n2. Catat rangkuman webinar System Design\n3. Review performa query database di PostgreSQL', 'blue', false, ARRAY['#target', '#draft'], 2),
+        ('🔗 Referensi Desain Modern 2026', 'Inspirasi UI minimalis & editorial:\n- Linear.app keyboard-first design\n- Notion dynamic nested blocks\n- Google Keep color-coded quick capture notes', 'purple', false, ARRAY['#referensi', '#ui'], 3)
+      `);
     }
 
     client.release();

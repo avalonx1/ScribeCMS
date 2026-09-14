@@ -5,8 +5,56 @@
 const STORAGE_KEYS = {
   POSTS: 'scribecms_posts',
   CATEGORIES: 'scribecms_categories',
-  SERIES: 'scribecms_series'
+  SERIES: 'scribecms_series',
+  NOTES: 'scribecms_notes'
 };
+
+const DEFAULT_NOTES = [
+  {
+    id: 1,
+    title: '💡 Ide Kursus: AI Agent & LLM Orchestration',
+    content: 'Buat seri course baru tentang arsitektur AI Agent lokal menggunakan LangChain, Ollama, dan vector store.\n\nRencana modul:\n- [ ] Modul 1: Konsep Agentic AI\n- [x] Modul 2: Memory & Tool Calling\n- [ ] Modul 3: Local RAG dengan PostgreSQL pgvector\n\nCatatan:\nSiapkan repositori starter kit sebelum rekaman video modul 1.',
+    color: 'amber',
+    is_pinned: true,
+    tags: ['#ide', '#course', '#ai'],
+    position: 0,
+    created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
+    updated_at: new Date(Date.now() - 3600000 * 2).toISOString()
+  },
+  {
+    id: 2,
+    title: '📌 Rencana Refactoring ScribeCMS',
+    content: 'Task sprint minggu ini:\n- [x] Optimasi image compressor saat upload paste\n- [ ] Tambah keyboard shortcut Ctrl+S di editor\n- [ ] Export catatan ke format PDF & EPUB\n- [ ] Auto-backup berkala ke cloud storage\n\nCatatan evaluasi:\nPerforma rendering pada dokumen besar sudah jauh lebih cepat.',
+    color: 'emerald',
+    is_pinned: true,
+    tags: ['#todo', '#fitur'],
+    position: 1,
+    created_at: new Date(Date.now() - 3600000 * 5).toISOString(),
+    updated_at: new Date(Date.now() - 3600000 * 5).toISOString()
+  },
+  {
+    id: 3,
+    title: '🎯 Target Menulis Minggu Ini',
+    content: '1. Selesaikan artikel tentang React 19 Compiler\n2. Catat rangkuman webinar System Design\n3. Review performa query database di PostgreSQL',
+    color: 'blue',
+    is_pinned: false,
+    tags: ['#target', '#draft'],
+    position: 2,
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    updated_at: new Date(Date.now() - 86400000).toISOString()
+  },
+  {
+    id: 4,
+    title: '🔗 Referensi Desain Modern 2026',
+    content: 'Inspirasi UI minimalis & editorial:\n- Linear.app keyboard-first design\n- Notion dynamic nested blocks\n- Google Keep color-coded quick capture notes',
+    color: 'purple',
+    is_pinned: false,
+    tags: ['#referensi', '#ui'],
+    position: 3,
+    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+    updated_at: new Date(Date.now() - 86400000 * 2).toISOString()
+  }
+];
 
 const DEFAULT_CATEGORIES = [
   { id: 1, name: 'Course Notes', description: 'Catatan materi kursus & tutorial online dengan video/gambar', icon: 'GraduationCap', color: '#14b8a6' },
@@ -140,6 +188,9 @@ class StorageService {
     }
     if (!localStorage.getItem(STORAGE_KEYS.SERIES)) {
       localStorage.setItem(STORAGE_KEYS.SERIES, JSON.stringify(DEFAULT_SERIES));
+    }
+    if (!localStorage.getItem(STORAGE_KEYS.NOTES)) {
+      localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(DEFAULT_NOTES));
     }
   }
 
@@ -461,6 +512,168 @@ class StorageService {
     return { message: 'Series updated locally' };
   }
 
+  // -------------------------------------------------------------
+  // Sticky Notes Methods (Google Keep-style Dual-Mode)
+  // -------------------------------------------------------------
+  async getNotes({ search = '', tag = '' } = {}) {
+    if (this.mode === 'postgres') {
+      try {
+        let url = '/api/notes?';
+        if (search) url += `search=${encodeURIComponent(search)}&`;
+        if (tag && tag !== 'All') url += `tag=${encodeURIComponent(tag)}&`;
+        const res = await fetch(url);
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn('Backend failed, falling back to local notes', e);
+      }
+    }
+
+    const raw = localStorage.getItem(STORAGE_KEYS.NOTES);
+    let notes = raw ? JSON.parse(raw) : DEFAULT_NOTES;
+
+    if (search) {
+      const q = search.toLowerCase();
+      notes = notes.filter(n =>
+        (n.title && n.title.toLowerCase().includes(q)) ||
+        (n.content && n.content.toLowerCase().includes(q)) ||
+        (n.tags && n.tags.some(t => t.toLowerCase().includes(q)))
+      );
+    }
+
+    if (tag && tag !== 'All') {
+      notes = notes.filter(n => n.tags && n.tags.includes(tag));
+    }
+
+    // Sort: is_pinned desc, position asc, updated_at desc
+    return notes.sort((a, b) => {
+      if (a.is_pinned !== b.is_pinned) return b.is_pinned ? 1 : -1;
+      if (a.position !== b.position) return (a.position || 0) - (b.position || 0);
+      return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at);
+    });
+  }
+
+  async saveNote(noteData) {
+    if (this.mode === 'postgres') {
+      try {
+        let res;
+        if (noteData.id) {
+          res = await fetch(`/api/notes/${noteData.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(noteData)
+          });
+        } else {
+          res = await fetch('/api/notes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(noteData)
+          });
+        }
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn('Backend note save failed, saving to local storage', e);
+      }
+    }
+
+    const raw = localStorage.getItem(STORAGE_KEYS.NOTES);
+    let notes = raw ? JSON.parse(raw) : [...DEFAULT_NOTES];
+
+    if (noteData.id) {
+      const idx = notes.findIndex(n => n.id === noteData.id);
+      if (idx >= 0) {
+        notes[idx] = {
+          ...notes[idx],
+          ...noteData,
+          updated_at: new Date().toISOString()
+        };
+        localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(notes));
+        return notes[idx];
+      }
+    }
+
+    // Create new note
+    const maxPos = notes.reduce((max, n) => Math.max(max, n.position || 0), 0);
+    const newNote = {
+      id: Date.now(),
+      title: noteData.title || '',
+      content: noteData.content || '',
+      color: noteData.color || 'default',
+      is_pinned: !!noteData.is_pinned,
+      tags: Array.isArray(noteData.tags) ? noteData.tags : [],
+      position: maxPos + 1,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    notes.unshift(newNote);
+    localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(notes));
+    return newNote;
+  }
+
+  async deleteNote(id) {
+    if (this.mode === 'postgres') {
+      try {
+        const res = await fetch(`/api/notes/${id}`, { method: 'DELETE' });
+        if (res.ok) return true;
+      } catch (e) {
+        console.warn('Backend note delete failed, deleting locally', e);
+      }
+    }
+
+    const raw = localStorage.getItem(STORAGE_KEYS.NOTES);
+    if (raw) {
+      const notes = JSON.parse(raw).filter(n => n.id !== id);
+      localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(notes));
+    }
+    return true;
+  }
+
+  async togglePinNote(id) {
+    const raw = localStorage.getItem(STORAGE_KEYS.NOTES);
+    let notes = raw ? JSON.parse(raw) : [...DEFAULT_NOTES];
+    const target = notes.find(n => n.id === id);
+    const nextPinned = target ? !target.is_pinned : true;
+
+    return await this.saveNote({ id, is_pinned: nextPinned });
+  }
+
+  async reorderNotes(items) {
+    if (this.mode === 'postgres') {
+      try {
+        const res = await fetch('/api/notes/reorder', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items })
+        });
+        if (res.ok) return true;
+      } catch (e) {
+        console.warn('Backend reorder failed, saving locally', e);
+      }
+    }
+
+    const raw = localStorage.getItem(STORAGE_KEYS.NOTES);
+    if (!raw) return true;
+
+    let notes = JSON.parse(raw);
+    const itemsMap = new Map(items.map(it => [it.id, it]));
+
+    notes = notes.map(n => {
+      const update = itemsMap.get(n.id);
+      if (update) {
+        return {
+          ...n,
+          position: update.position,
+          is_pinned: update.is_pinned !== undefined ? update.is_pinned : n.is_pinned,
+          updated_at: new Date().toISOString()
+        };
+      }
+      return n;
+    });
+
+    localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(notes));
+    return true;
+  }
+
   // Upload Image: Online uses /api/upload, Offline/GitHub Pages converts to Base64 Data URL
   async uploadImage(file) {
     if (this.mode === 'postgres') {
@@ -492,13 +705,15 @@ class StorageService {
     const rawPosts = localStorage.getItem(STORAGE_KEYS.POSTS);
     const rawCategories = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
     const rawSeries = localStorage.getItem(STORAGE_KEYS.SERIES);
+    const rawNotes = localStorage.getItem(STORAGE_KEYS.NOTES);
 
     return {
       version: '1.0',
       exported_at: new Date().toISOString(),
       posts: rawPosts ? JSON.parse(rawPosts) : [],
       categories: rawCategories ? JSON.parse(rawCategories) : [],
-      series: rawSeries ? JSON.parse(rawSeries) : []
+      series: rawSeries ? JSON.parse(rawSeries) : [],
+      notes: rawNotes ? JSON.parse(rawNotes) : []
     };
   }
 
@@ -521,6 +736,10 @@ class StorageService {
 
     if (Array.isArray(jsonData.series)) {
       localStorage.setItem(STORAGE_KEYS.SERIES, JSON.stringify(jsonData.series));
+    }
+
+    if (Array.isArray(jsonData.notes)) {
+      localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(jsonData.notes));
     }
 
     return true;

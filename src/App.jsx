@@ -6,6 +6,7 @@ import PostList from './components/Dashboard/PostList';
 import CourseSeries from './components/Dashboard/CourseSeries';
 import MarkdownEditor from './components/Editor/MarkdownEditor';
 import PostDetail from './components/Reader/PostDetail';
+import StickyNotesView from './components/StickyNotes/StickyNotesView';
 import { storageService } from './services/storageService';
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
   const [posts, setPosts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [notes, setNotes] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dbStatus, setDbStatus] = useState('checking');
@@ -68,10 +70,24 @@ export default function App() {
         favorite: selectedCategory === 'Favorites'
       });
       setPosts(postsData);
+
+      // 6. Fetch sticky notes
+      const notesData = await storageService.getNotes();
+      setNotes(notesData);
     } catch (err) {
       console.error('Error fetching data:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Quick fetch sticky notes only
+  const fetchNotes = async () => {
+    try {
+      const notesData = await storageService.getNotes();
+      setNotes(notesData);
+    } catch (err) {
+      console.error('Error fetching notes:', err);
     }
   };
 
@@ -211,6 +227,53 @@ export default function App() {
     setActiveView('editor');
   };
 
+  // Sticky Notes Handlers
+  const handleSaveNote = async (noteData) => {
+    try {
+      const saved = await storageService.saveNote(noteData);
+      if (saved) {
+        await fetchNotes();
+        return saved;
+      }
+    } catch (err) {
+      alert('Gagal menyimpan note: ' + err.message);
+    }
+  };
+
+  const handleDeleteNote = async (id) => {
+    try {
+      await storageService.deleteNote(id);
+      await fetchNotes();
+    } catch (err) {
+      alert('Gagal menghapus note: ' + err.message);
+    }
+  };
+
+  const handleTogglePinNote = async (id) => {
+    try {
+      await storageService.togglePinNote(id);
+      await fetchNotes();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleReorderNotes = async (items) => {
+    try {
+      const itemsMap = new Map(items.map(it => [it.id, it]));
+      setNotes(prev => prev.map(n => {
+        const up = itemsMap.get(n.id);
+        return up ? { ...n, position: up.position, is_pinned: up.is_pinned !== undefined ? up.is_pinned : n.is_pinned } : n;
+      }).sort((a, b) => {
+        if (a.is_pinned !== b.is_pinned) return b.is_pinned ? 1 : -1;
+        return (a.position || 0) - (b.position || 0);
+      }));
+      await storageService.reorderNotes(items);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0b0f19] text-zinc-100 flex flex-col font-sans">
       
@@ -239,8 +302,8 @@ export default function App() {
       {/* Main App Layout */}
       <div className="flex-1 flex overflow-hidden">
         
-        {/* Left Sidebar (Only visible on dashboard and courses views) */}
-        {(activeView === 'dashboard' || activeView === 'courses') && (
+        {/* Left Sidebar (Only visible on dashboard, courses, and notes views) */}
+        {(activeView === 'dashboard' || activeView === 'courses' || activeView === 'notes') && (
           <Sidebar
             activeView={activeView}
             setActiveView={setActiveView}
@@ -251,6 +314,7 @@ export default function App() {
             }}
             categories={categories}
             stats={stats}
+            notesCount={notes.length}
           />
         )}
 
@@ -335,6 +399,18 @@ export default function App() {
               onBack={() => setActiveView('dashboard')}
               onEdit={handleEditPost}
               onToggleFavorite={handleToggleFavorite}
+              showToast={showToast}
+            />
+          )}
+
+          {/* 5. Sticky Notes View (Google Keep Style) */}
+          {activeView === 'notes' && (
+            <StickyNotesView
+              notes={notes}
+              onSaveNote={handleSaveNote}
+              onDeleteNote={handleDeleteNote}
+              onTogglePinNote={handleTogglePinNote}
+              onReorderNotes={handleReorderNotes}
               showToast={showToast}
             />
           )}

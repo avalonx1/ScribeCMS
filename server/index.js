@@ -487,6 +487,134 @@ app.get('/api/tags', async (req, res) => {
   }
 });
 
+// -------------------------------------------------------------
+// STICKY NOTES API ENDPOINTS
+// -------------------------------------------------------------
+
+// GET all notes (supports search & tag filter)
+app.get('/api/notes', async (req, res) => {
+  try {
+    const { search, tag } = req.query;
+    let query = 'SELECT * FROM notes WHERE 1=1';
+    const params = [];
+    let idx = 1;
+
+    if (search) {
+      query += ` AND (title ILIKE $${idx} OR content ILIKE $${idx})`;
+      params.push(`%${search}%`);
+      idx++;
+    }
+
+    if (tag && tag !== 'All') {
+      query += ` AND $${idx} = ANY(tags)`;
+      params.push(tag);
+      idx++;
+    }
+
+    query += ' ORDER BY is_pinned DESC, position ASC, updated_at DESC';
+
+    const result = await pool.query(query, params);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST create new note
+app.post('/api/notes', async (req, res) => {
+  try {
+    const { title = '', content = '', color = 'default', is_pinned = false, tags = [] } = req.body;
+    
+    const posRes = await pool.query('SELECT COALESCE(MAX(position), 0) + 1 as next_pos FROM notes');
+    const position = posRes.rows[0].next_pos;
+
+    const result = await pool.query(`
+      INSERT INTO notes (title, content, color, is_pinned, tags, position)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING *
+    `, [title, content, color, !!is_pinned, tags, position]);
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT reorder notes (batch update position and is_pinned)
+app.put('/api/notes/reorder', async (req, res) => {
+  try {
+    const { items } = req.body; // Array of { id, position, is_pinned }
+    if (!Array.isArray(items)) {
+      return res.status(400).json({ error: 'Array of items required' });
+    }
+
+    for (const item of items) {
+      await pool.query(`
+        UPDATE notes 
+        SET position = $1, is_pinned = COALESCE($2, is_pinned), updated_at = CURRENT_TIMESTAMP
+        WHERE id = $3
+      `, [item.position, item.is_pinned !== undefined ? item.is_pinned : null, item.id]);
+    }
+
+    res.json({ success: true, message: 'Notes reordered successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT update existing note
+app.put('/api/notes/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, content, color, is_pinned, tags, position } = req.body;
+
+    const current = await pool.query('SELECT * FROM notes WHERE id = $1', [id]);
+    if (current.rows.length === 0) {
+      return res.status(404).json({ error: 'Note not found' });
+    }
+
+    const updated = await pool.query(`
+      UPDATE notes
+      SET 
+        title = COALESCE($1, title),
+        content = COALESCE($2, content),
+        color = COALESCE($3, color),
+        is_pinned = COALESCE($4, is_pinned),
+        tags = COALESCE($5, tags),
+        position = COALESCE($6, position),
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = $7
+      RETURNING *
+    `, [
+      title !== undefined ? title : null,
+      content !== undefined ? content : null,
+      color !== undefined ? color : null,
+      is_pinned !== undefined ? is_pinned : null,
+      tags !== undefined ? tags : null,
+      position !== undefined ? position : null,
+      id
+    ]);
+
+    res.json(updated.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE note
+app.delete('/api/notes/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('DELETE FROM notes WHERE id = $1 RETURNING id', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Note not found' });
+    }
+    res.json({ success: true, message: 'Note deleted', id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // POST HTML to Markdown conversion (Smart Course Content Converter)
 app.post('/api/convert-html', (req, res) => {
   try {

@@ -3,7 +3,8 @@ import {
   BookOpen, 
   GraduationCap, 
   Star, 
-  Sparkles
+  Sparkles,
+  StickyNote
 } from 'lucide-react';
 
 export default function Sidebar({ 
@@ -12,7 +13,8 @@ export default function Sidebar({
   selectedCategory, 
   setSelectedCategory, 
   categories = [], 
-  stats 
+  stats,
+  notesCount = 0
 }) {
   return (
     <aside className="w-60 border-r border-zinc-800/80 bg-[#0b0f19] flex flex-col h-[calc(100vh-4rem)] sticky top-16 select-none shrink-0">
@@ -57,12 +59,31 @@ export default function Sidebar({
         </button>
 
         <button
+          onClick={() => setActiveView('notes')}
+          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
+            activeView === 'notes'
+              ? 'bg-amber-500/15 text-amber-300 font-semibold border border-amber-500/30'
+              : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/50'
+          }`}
+        >
+          <div className="flex items-center gap-2.5">
+            <StickyNote className={`h-3.5 w-3.5 ${activeView === 'notes' ? 'text-amber-400' : 'text-zinc-400'}`} />
+            <span>Sticky Notes & Ide</span>
+          </div>
+          <span className={`text-[11px] font-mono px-1.5 py-0.5 rounded-md ${
+            activeView === 'notes' ? 'bg-amber-500/20 text-amber-300' : 'text-zinc-500'
+          }`}>
+            {notesCount}
+          </span>
+        </button>
+
+        <button
           onClick={() => {
             setActiveView('dashboard');
             setSelectedCategory('Favorites');
           }}
           className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
-            selectedCategory === 'Favorites'
+            activeView === 'dashboard' && selectedCategory === 'Favorites'
               ? 'bg-zinc-850 text-white font-semibold'
               : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/50'
           }`}
