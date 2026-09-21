@@ -12,7 +12,8 @@ import {
   GraduationCap, 
   Link as LinkIcon, 
   Copy, 
-  Download
+  Download,
+  AlignLeft
 } from 'lucide-react';
 import { getPostFeatureImage } from '../../utils/imageHelper';
 import TableOfContents from './TableOfContents';
@@ -70,14 +71,14 @@ export default function PostDetail({
     <div className="min-h-[calc(100vh-4rem)] bg-[#0b0f19] pb-24">
       
       {/* Top Reading Navigation Bar */}
-      <div className="sticky top-16 z-30 border-b border-zinc-800/80 bg-[#0b0f19]/90 backdrop-blur-md px-6 py-2.5 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="sticky top-16 z-30 border-b border-zinc-800/80 bg-[#0b0f19]/90 backdrop-blur-md px-3.5 sm:px-6 py-2 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <button
             onClick={onBack}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors shrink-0"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Kembali</span>
+            <span className="hidden xs:inline">Kembali</span>
           </button>
 
           {post.course_name && (
@@ -135,14 +136,14 @@ export default function PostDetail({
       </div>
 
       {/* Main Container */}
-      <div className="max-w-6xl mx-auto px-6 pt-8 flex gap-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-4 sm:pt-8 flex gap-8 lg:gap-12">
         
         {/* Article Body */}
-        <div className="flex-1 max-w-3xl">
+        <div className="flex-1 max-w-3xl min-w-0">
           
           {/* FEATURE IMAGE BANNER */}
           {featureImg && (
-            <div className="rounded-2xl overflow-hidden aspect-[16/9] mb-8 bg-zinc-900 border border-zinc-800/80 shadow-2xl">
+            <div className="rounded-2xl overflow-hidden aspect-[16/9] mb-6 sm:mb-8 bg-zinc-900 border border-zinc-800/80 shadow-2xl">
               <img
                 src={featureImg}
                 alt={post.title}
@@ -152,21 +153,21 @@ export default function PostDetail({
           )}
 
           {/* Article Header */}
-          <header className="mb-10 pb-8 border-b border-zinc-800/80">
+          <header className="mb-8 sm:mb-10 pb-6 sm:pb-8 border-b border-zinc-800/80">
             
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-3 sm:mb-4 flex-wrap">
               <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700/60">
                 {post.category || 'Materi'}
               </span>
               {post.course_name && (
-                <span className="flex items-center gap-1 text-xs font-medium text-emerald-400">
-                  <GraduationCap className="h-3.5 w-3.5" />
-                  <span>{post.course_name}</span>
+                <span className="flex items-center gap-1 text-xs font-medium text-emerald-400 truncate max-w-xs">
+                  <GraduationCap className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate">{post.course_name}</span>
                 </span>
               )}
             </div>
 
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight mb-5">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight mb-4 sm:mb-5 break-words">
               {post.title}
             </h1>
 
@@ -208,6 +209,34 @@ export default function PostDetail({
               </div>
             )}
           </header>
+
+          {/* Mobile Table of Contents Accordion */}
+          {headings.length > 0 && (
+            <div className="lg:hidden mb-8 rounded-xl bg-zinc-900/40 border border-zinc-800/80 p-3.5">
+              <details className="group">
+                <summary className="flex items-center justify-between text-xs font-semibold text-zinc-300 cursor-pointer select-none">
+                  <div className="flex items-center gap-2">
+                    <AlignLeft className="h-3.5 w-3.5 text-emerald-400" />
+                    <span>Daftar Isi Artikel ({headings.length} Bab)</span>
+                  </div>
+                  <span className="text-[10px] text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <nav className="mt-3 pt-2 border-t border-zinc-800/60 space-y-1.5 text-xs">
+                  {headings.map((h, i) => (
+                    <a
+                      key={i}
+                      href={`#${h.id}`}
+                      className={`block py-1 hover:text-emerald-400 transition-colors truncate ${
+                        h.level === 1 ? 'pl-0 text-zinc-200 font-medium' : h.level === 2 ? 'pl-3 text-zinc-400' : 'pl-5 text-zinc-500'
+                      }`}
+                    >
+                      {h.text}
+                    </a>
+                  ))}
+                </nav>
+              </details>
+            </div>
+          )}
 
           {/* Markdown Content */}
           <main className="markdown-body">

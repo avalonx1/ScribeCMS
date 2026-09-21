@@ -20,8 +20,10 @@ Write-Host "📦 3. Pushing 'dist' to branch 'gh-pages'..." -ForegroundColor Cya
 # Push dist subtree to gh-pages branch
 git add -f dist
 git commit -m "Deploy to GitHub Pages: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
-git push origin (git subtree split --prefix dist main):gh-pages --force
-git reset HEAD~1
+git subtree split --prefix dist -b gh-pages-local
+git push origin gh-pages-local:gh-pages --force
+git branch -D gh-pages-local
+git reset --mixed HEAD~1
 
 Write-Host "⚙️ 4. Enabling GitHub Pages for $Repo on branch 'gh-pages'..." -ForegroundColor Cyan
 try {

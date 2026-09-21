@@ -29,24 +29,24 @@ export default function StatsOverview({ stats, posts = [] }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mb-6 sm:mb-8">
       {statItems.map((item, idx) => {
         const Icon = item.icon;
         return (
           <div 
             key={idx} 
-            className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between"
+            className="p-3 sm:p-4 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between gap-2"
           >
-            <div>
-              <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider block mb-1">
+            <div className="min-w-0">
+              <span className="text-[10px] sm:text-[11px] font-medium text-zinc-500 uppercase tracking-wider block mb-0.5 truncate">
                 {item.title}
               </span>
-              <span className="text-xl font-bold text-white tracking-tight">
+              <span className="text-lg sm:text-xl font-bold text-white tracking-tight">
                 {item.value}
               </span>
             </div>
-            <div className="h-8 w-8 rounded-lg bg-zinc-800/60 flex items-center justify-center text-zinc-400">
-              <Icon className="h-4 w-4" />
+            <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-zinc-800/60 flex items-center justify-center text-zinc-400 shrink-0">
+              <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </div>
           </div>
         );

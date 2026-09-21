@@ -65,41 +65,54 @@ const DEFAULT_CATEGORIES = [
 
 const DEFAULT_SERIES = [
   {
-    name: 'Modern Web Engineering',
-    description: 'Arsitektur React 19, Next.js, dan optimasi performa modern.',
-    cover_image: '',
+    name: 'Fullstack Next.js 15 & React 19 Pro',
+    description: 'Panduan komprehensif arsitektur Next.js 15 App Router, React Server Components, Server Actions, dan deployment production.',
+    cover_image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop',
+    post_count: 3
+  },
+  {
+    name: 'System Design & Microservices Architecture',
+    description: 'Mempelajari perancangan sistem backend berskala jutaan pengguna, event-driven messaging, data caching, dan sharding.',
+    cover_image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1200&auto=format&fit=crop',
     post_count: 2
+  },
+  {
+    name: 'Generative AI & Agentic Workflow Engineering',
+    description: 'Membangun autonomous AI agent cerdas, Retrieval-Augmented Generation (RAG) lokal, dan tool calling menggunakan LangGraph.',
+    cover_image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop',
+    post_count: 3
   }
 ];
 
 const DEFAULT_POSTS = [
+  // SERIES 1: Fullstack Next.js 15 & React 19 Pro
   {
     id: 1,
-    title: 'Mastering Next.js 15 & React 19: Full Course Notes',
-    slug: 'mastering-nextjs-15-react-19',
-    summary: 'Catatan komprehensif dari course Next.js 15 App Router, Server Actions, dan integrasi video tutorial.',
+    title: 'Mastering Next.js 15 App Router & Server Actions',
+    slug: 'mastering-nextjs-15-app-router-server-actions',
+    summary: 'Konsep inti React Server Components (RSC), mutasi data form dengan Server Actions, dan integrasi video tutorial interaktif.',
     category: 'Course Notes',
-    course_name: 'Modern Web Engineering',
-    module_name: 'Module 1: Server Components & Actions',
-    tags: ['React', 'Next.js', 'Tutorial', 'Web Development'],
+    course_name: 'Fullstack Next.js 15 & React 19 Pro',
+    module_name: 'Modul 1: Server Components & Actions',
+    cover_image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop',
+    tags: ['React19', 'Next.js', 'WebDev', 'Tutorial'],
     reading_time: 4,
     is_favorite: true,
-    source_url: 'https://youtube.com',
-    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-    updated_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-    content: `# Mastering Next.js 15 & React 19: Full Course Notes
+    source_url: 'https://nextjs.org/docs',
+    created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
+    updated_at: new Date(Date.now() - 86400000 * 5).toISOString(),
+    content: `# Mastering Next.js 15 App Router & Server Actions
 
-Selamat datang di catatan modul kursus **Next.js 15 & React 19**. Catatan ini merangkum pembahasan konsep inti App Router, Server Components, dan integrasi video tutorial interaktif.
+Selamat datang di catatan modul 1 seri kursus **Fullstack Next.js 15 & React 19 Pro**. Catatan ini merangkum pembahasan konsep inti App Router, Server Components, dan integrasi video tutorial interaktif.
 
-## 📺 Video Tutorial Modul 1
-Tonton video pembelajaran resmi di bawah ini:
+## 📺 Video Pembelajaran Modul 1
+Pelajari arsitektur rendering Next.js melalui video berikut:
 
 <iframe width="100%" height="420" src="https://www.youtube.com/embed/Sklc_fQBmcs" title="Next.js 15 Tutorial" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen class="rounded-xl my-4 shadow-lg border border-slate-700"></iframe>
 
 ---
 
 ## 🚀 Key Takeaways dari Course
-
 1. **React Server Components (RSC)**: Komponen di-render secara default di server untuk performa super cepat tanpa beban JS berlebih di client.
 2. **Server Actions**: Mutasi data langsung dari form tanpa perlu membuat endpoint API manual.
 3. **Partial Prerendering (PPR)**: Gabungan rendering statis dan dinamis dalam satu shell halaman.
@@ -124,52 +137,239 @@ export async function createPost(formData) {
 }
 \`\`\`
 
-> 💡 **Tip Course**: Gunakan \`useOptimistic\` untuk memberikan feedback instan ke user sebelum response server selesai.
-
-## 🔗 Referensi & Resources
-- [Dokumentasi Resmi Next.js](https://nextjs.org/docs)
-- [React 19 Release Notes](https://react.dev/blog/2024/12/05/react-19)
-- [PostgreSQL Indexing Best Practices](https://www.postgresql.org/docs/current/indexes.html)`
+> 💡 **Tip Course**: Gunakan \`useOptimistic\` untuk memberikan feedback instan ke user sebelum response server selesai.`
   },
   {
     id: 2,
-    title: 'PostgreSQL Advanced Schema & Indexing Guide',
-    slug: 'postgresql-advanced-schema-indexing',
-    summary: 'Strategi optimasi query database, B-Tree vs GIN Indexing, serta teknik partitioning untuk aplikasi skala besar.',
+    title: 'Database PostgreSQL, Drizzle ORM & Schema Design',
+    slug: 'database-postgresql-drizzle-orm-schema-design',
+    summary: 'Membangun relasi database yang cepat, type-safe query dengan Drizzle ORM, dan teknik migrasi skema database.',
     category: 'Tech & Dev',
-    course_name: 'Modern Web Engineering',
-    module_name: 'Module 2: Database Performance Tuning',
-    tags: ['PostgreSQL', 'Database', 'Performance', 'Backend'],
+    course_name: 'Fullstack Next.js 15 & React 19 Pro',
+    module_name: 'Modul 2: Database & ORM Setup',
+    cover_image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?q=80&w=1200&auto=format&fit=crop',
+    tags: ['PostgreSQL', 'DrizzleORM', 'Database'],
     reading_time: 5,
     is_favorite: false,
-    source_url: 'https://postgresql.org',
-    created_at: new Date(Date.now() - 86400000).toISOString(),
-    updated_at: new Date(Date.now() - 86400000).toISOString(),
-    content: `# PostgreSQL Advanced Schema & Indexing Guide
+    source_url: 'https://orm.drizzle.team',
+    created_at: new Date(Date.now() - 86400000 * 4).toISOString(),
+    updated_at: new Date(Date.now() - 86400000 * 4).toISOString(),
+    content: `# Database PostgreSQL, Drizzle ORM & Schema Design
 
-Panduan praktis merancang skema database PostgreSQL berkinerja tinggi untuk aplikasi CMS dan knowledge hub.
+Panduan praktis merancang skema database PostgreSQL berkinerja tinggi menggunakan Drizzle ORM untuk aplikasi skala modern.
 
-## 📊 Kapan Menggunakan Berbagai Tipe Index?
+## 📊 Definisi Skema Tabel dengan Drizzle ORM
+\`\`\`typescript
+import { pgTable, serial, text, timestamp, boolean } from 'drizzle-orm/pg-core';
 
-| Tipe Index | Kegunaan Utama | Operator Umum |
-| :--- | :--- | :--- |
-| **B-Tree** | Default, perbandingan nilai pasti & rentang | \`=\`, \`<\`, \`>\`, \`BETWEEN\` |
-| **GIN** | Kolom JSONB, Array, Full-Text Search | \`@>\`, \`?\`, \`@@\` |
-| **BRIN** | Tabel historis berurutan (Timestamp besar) | Range timestamps |
-
-### Contoh Query Full-Text Search dengan GIN:
-\`\`\`sql
--- Membuat index GIN pada konten artikel
-CREATE INDEX idx_posts_content_search ON posts USING gin(to_tsvector('english', content));
-
--- Melakukan pencarian cepat
-SELECT id, title, ts_rank(to_tsvector('english', content), query) AS rank
-FROM posts, to_tsquery('english', 'database & indexing') query
-WHERE to_tsvector('english', content) @@ query
-ORDER BY rank DESC;
+export const posts = pgTable('posts', {
+  id: serial('id').primaryKey(),
+  title: text('title').notNull(),
+  content: text('content').notNull(),
+  courseName: text('course_name'),
+  isFavorite: boolean('is_favorite').default(false),
+  createdAt: timestamp('created_at').defaultNow(),
+});
 \`\`\`
 
-> ⚡ **Tips:** Selalu jalankan \`EXPLAIN ANALYZE\` sebelum dan sesudah menambahkan index untuk mengukur cost query sebenarnya.`
+> ⚡ **Tips:** Selalu jalankan \`npx drizzle-kit generate\` untuk membuat migrasi SQL terstruktur sebelum deployment.`
+  },
+  {
+    id: 3,
+    title: 'Authentication Auth.js v5 & Production CI/CD',
+    slug: 'authentication-authjs-v5-production-cicd',
+    summary: 'Implementasi secure session cookie, OAuth 2.0 Google/GitHub, middleware protection, dan otomatisasi deployment.',
+    category: 'Course Notes',
+    course_name: 'Fullstack Next.js 15 & React 19 Pro',
+    module_name: 'Modul 3: Keamanan & Deployment',
+    cover_image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1200&auto=format&fit=crop',
+    tags: ['Auth', 'Security', 'DevOps'],
+    reading_time: 4,
+    is_favorite: false,
+    source_url: 'https://authjs.dev',
+    created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
+    updated_at: new Date(Date.now() - 86400000 * 3).toISOString(),
+    content: `# Authentication Auth.js v5 & Production CI/CD
+
+Mengamankan rute aplikasi web menggunakan Auth.js v5 dengan session berbasis JWT yang dienkripsi ketat.
+
+## 🛡️ Best Practice Keamanan
+- Aktifkan \`httpOnly\` dan \`sameSite: 'lax'\` pada semua cookie sesi
+- Validasi origin header pada setiap Server Action untuk mencegah CSRF
+- Konfigurasikan GitHub Actions pipeline untuk automated testing sebelum push ke branch produksi.`
+  },
+
+  // SERIES 2: System Design & Microservices Architecture
+  {
+    id: 4,
+    title: 'Event-Driven Architecture dengan Apache Kafka & Redis',
+    slug: 'event-driven-architecture-apache-kafka-redis',
+    summary: 'Pola asynchronous messaging, consumer groups, message deduplication, dan distributed locking di Redis.',
+    category: 'Tech & Dev',
+    course_name: 'System Design & Microservices Architecture',
+    module_name: 'Modul 1: Asynchronous Event Streaming',
+    cover_image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1200&auto=format&fit=crop',
+    tags: ['SystemDesign', 'Kafka', 'Redis', 'Microservices'],
+    reading_time: 6,
+    is_favorite: true,
+    source_url: 'https://kafka.apache.org',
+    created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
+    updated_at: new Date(Date.now() - 86400000 * 3).toISOString(),
+    content: `# Event-Driven Architecture dengan Apache Kafka & Redis
+
+Merancang sistem desentralisasi yang tahan terhadap traffic lonjakan tinggi (high-throughput) dengan event streaming.
+
+## 🔄 Pola Alur Event (Event Flow)
+1. **Producer Service** menerbitkan event perubahan data ke Kafka Topic.
+2. **Broker** mempartisi pesan untuk menjamin urutan pemrosesan per entity ID.
+3. **Consumer Services** membaca event secara independen tanpa saling memblokir.
+
+\`\`\`javascript
+// Contoh idempotent message processing dengan Redis
+async function processEvent(event) {
+  const isDuplicate = await redis.set(\`processed:\${event.id}\`, '1', 'NX', 'EX', 86400);
+  if (!isDuplicate) {
+    console.log('Event sudah diproses sebelumnya, skip.');
+    return;
+  }
+  await executeBusinessLogic(event);
+}
+\`\`\`
+
+> 💡 **Callout:** Selalu terapkan pola *Dead Letter Queue (DLQ)* untuk menangani pesan yang gagal diproses berkali-kali.`
+  },
+  {
+    id: 5,
+    title: 'Database Partitioning, Sharding & Multi-Region Caching',
+    slug: 'database-partitioning-sharding-multi-region-caching',
+    summary: 'Teknik memecah tabel besar (horizontal sharding), replication lag, dan strategi cache-aside vs write-through.',
+    category: 'Tech & Dev',
+    course_name: 'System Design & Microservices Architecture',
+    module_name: 'Modul 2: Skalabilitas Data',
+    cover_image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop',
+    tags: ['Database', 'Sharding', 'Caching', 'Scalability'],
+    reading_time: 5,
+    is_favorite: false,
+    source_url: 'https://highscalability.com',
+    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+    updated_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+    content: `# Database Partitioning, Sharding & Multi-Region Caching
+
+Ketika basis data mencapai miliaran baris data, teknik partitioning dan caching berlapis menjadi kewajiban arsitektur.
+
+## 📊 Latency Comparison Matrix
+| Storage Layer | Rata-rata Latensi | Kapasitas Rekomendasi |
+| :--- | :--- | :--- |
+| **L1 CPU Cache** | < 1 ns | Kilobytes |
+| **RAM (Redis / Memcached)** | ~ 0.1 - 0.5 ms | Gigabytes |
+| **SSD / NVMe (PostgreSQL)** | ~ 1 - 5 ms | Terabytes |
+| **Cross-Region Network Read** | ~ 50 - 150 ms | Tak terbatas |`
+  },
+
+  // SERIES 3: Generative AI & Agentic Workflow Engineering
+  {
+    id: 6,
+    title: 'Konsep Dasar Agentic AI & Tool Calling Orchestration',
+    slug: 'konsep-dasar-agentic-ai-tool-calling-orchestration',
+    summary: 'Bagaimana LLM menentukan kapan harus berpikir, memanggil fungsi API eksternal, dan mengembalikan hasil ke pengguna.',
+    category: 'Course Notes',
+    course_name: 'Generative AI & Agentic Workflow Engineering',
+    module_name: 'Modul 1: ReAct Loop & Function Calling',
+    cover_image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop',
+    tags: ['AI', 'LLM', 'AgenticAI', 'Automation'],
+    reading_time: 5,
+    is_favorite: true,
+    source_url: 'https://langchain.com',
+    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+    updated_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+    content: `# Konsep Dasar Agentic AI & Tool Calling Orchestration
+
+Agentic AI merevolusi cara kerja AI dari sekadar chatbot interaktif menjadi agen yang mampu melakukan tindakan nyata di dunia komputasi.
+
+## 🧠 Pola ReAct (Reasoning + Acting)
+Siklus kerja autonomous agent terdiri dari 3 tahapan berulang:
+1. **Thought**: Menganalisa input pengguna dan memecah masalah menjadi rencana langkah-langkah.
+2. **Action**: Memilih alat (tool) yang tepat dan mengeksekusi dengan argumen JSON yang valid.
+3. **Observation**: Membaca hasil eksekusi alat dan memutuskan apakah tugas sudah selesai atau butuh tindakan lanjutan.
+
+> 🤖 **Insight:** Kunci keandalan agen adalah skema tool yang presisi dan instruksi pembatas (*guardrails*) yang jelas.`
+  },
+  {
+    id: 7,
+    title: 'Local RAG Pipeline dengan PostgreSQL pgvector & Embeddings',
+    slug: 'local-rag-pipeline-postgresql-pgvector-embeddings',
+    summary: 'Menyimpan representasi vektor artikel ke dalam database PostgreSQL dan pencarian semantik dengan cosine distance.',
+    category: 'Tech & Dev',
+    course_name: 'Generative AI & Agentic Workflow Engineering',
+    module_name: 'Modul 2: Vector Search & Chunking',
+    cover_image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1200&auto=format&fit=crop',
+    tags: ['RAG', 'pgvector', 'Embedding', 'PostgreSQL'],
+    reading_time: 6,
+    is_favorite: false,
+    source_url: 'https://github.com/pgvector/pgvector',
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    updated_at: new Date(Date.now() - 86400000).toISOString(),
+    content: `# Local RAG Pipeline dengan PostgreSQL pgvector & Embeddings
+
+Panduan membangun Retrieval-Augmented Generation (RAG) secara mandiri tanpa ketergantungan pada vector database berbayar eksternal.
+
+## 🔍 Menggunakan Ekstensi pgvector
+\`\`\`sql
+-- Mengaktifkan ekstensi vektor
+CREATE EXTENSION IF NOT EXISTS vector;
+
+-- Tabel catatan dengan embedding 1536 dimensi
+CREATE TABLE document_embeddings (
+  id SERIAL PRIMARY KEY,
+  content TEXT NOT NULL,
+  embedding VECTOR(1536)
+);
+
+-- Query pencarian semantik dengan Cosine Similarity (<=> operator)
+SELECT content, 1 - (embedding <=> $1) AS similarity
+FROM document_embeddings
+ORDER BY embedding <=> $1
+LIMIT 5;
+\`\`\`
+
+> 💡 **Tip:** Gunakan semantic chunking (memotong dokumen berdasarkan paragraf atau bab) daripada karakter mentah agar konteks tidak hilang.`
+  },
+  {
+    id: 8,
+    title: 'Multi-Agent Collaboration dengan LangGraph & State Machine',
+    slug: 'multi-agent-collaboration-langgraph-state-machine',
+    summary: 'Pola arsitektur Supervisor Agent yang mendelegasikan tugas ke sub-agent riset, penulisan kode, dan reviewer.',
+    category: 'Course Notes',
+    course_name: 'Generative AI & Agentic Workflow Engineering',
+    module_name: 'Modul 3: Multi-Agent Systems',
+    cover_image: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=1200&auto=format&fit=crop',
+    tags: ['LangGraph', 'MultiAgent', 'Workflow'],
+    reading_time: 5,
+    is_favorite: true,
+    source_url: 'https://langchain-ai.github.io/langgraph/',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    content: `# Multi-Agent Collaboration dengan LangGraph & State Machine
+
+Ketika sebuah pekerjaan pemrograman terlalu rumit untuk satu LLM, arsitektur multi-agen membagi tugas layaknya tim insinyur perangkat lunak sungguhan.
+
+## 👥 Peran Agen Kolaboratif
+- **Supervisor Agent**: Manajer proyek yang menganalisa spesifikasi fitur dan membagi tiket ke spesialis.
+- **Coder Agent**: Mengimplementasikan kode sesuai instruksi teknis.
+- **Reviewer Agent**: Membaca kode, memeriksa celah keamanan, dan memberikan feedback perbaikan otomatis.
+
+\`\`\`mermaid
+graph TD
+    User([Permintaan User]) --> Supervisor[Supervisor Agent]
+    Supervisor --> Researcher[Research Agent]
+    Researcher --> Supervisor
+    Supervisor --> Coder[Coder Agent]
+    Coder --> Reviewer[Code Reviewer]
+    Reviewer -->|Perlu Perbaikan| Coder
+    Reviewer -->|Lulus Uji| FinalOutput([Hasil Sempurna])
+\`\`\`
+
+> 🚀 **Kesimpulan:** Kolaborasi multi-agen terstruktur menghasilkan akurasi kode yang jauh melampaui pendekatan prompt tunggal.`
   }
 ];
 
@@ -180,14 +380,21 @@ class StorageService {
   }
 
   initLocalStorage() {
-    if (!localStorage.getItem(STORAGE_KEYS.POSTS)) {
+    const rawPosts = localStorage.getItem(STORAGE_KEYS.POSTS);
+    let posts = rawPosts ? JSON.parse(rawPosts) : null;
+    // If posts are missing or have fewer than 5 posts, seed with complete 3-course examples
+    if (!posts || posts.length < 5) {
       localStorage.setItem(STORAGE_KEYS.POSTS, JSON.stringify(DEFAULT_POSTS));
     }
+
+    const rawSeries = localStorage.getItem(STORAGE_KEYS.SERIES);
+    let series = rawSeries ? JSON.parse(rawSeries) : null;
+    if (!series || series.length < 3) {
+      localStorage.setItem(STORAGE_KEYS.SERIES, JSON.stringify(DEFAULT_SERIES));
+    }
+
     if (!localStorage.getItem(STORAGE_KEYS.CATEGORIES)) {
       localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(DEFAULT_CATEGORIES));
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.SERIES)) {
-      localStorage.setItem(STORAGE_KEYS.SERIES, JSON.stringify(DEFAULT_SERIES));
     }
     if (!localStorage.getItem(STORAGE_KEYS.NOTES)) {
       localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(DEFAULT_NOTES));
@@ -251,6 +458,23 @@ class StorageService {
     
     // Group posts by course_name
     const coursesMap = {};
+
+    // 1. Seed with registered series meta
+    seriesMeta.forEach(meta => {
+      if (meta.name) {
+        coursesMap[meta.name] = {
+          course_name: meta.name,
+          post_count: 0,
+          total_modules: 0,
+          notes: [],
+          description: meta.description || '',
+          cover_image: meta.cover_image || '',
+          last_updated: meta.last_updated || new Date().toISOString()
+        };
+      }
+    });
+
+    // 2. Attach posts and child notes
     posts.forEach(p => {
       if (p.course_name) {
         if (!coursesMap[p.course_name]) {
@@ -258,11 +482,26 @@ class StorageService {
           coursesMap[p.course_name] = {
             course_name: p.course_name,
             post_count: 0,
+            total_modules: 0,
+            notes: [],
             description: meta.description || '',
-            cover_image: meta.cover_image || ''
+            cover_image: meta.cover_image || '',
+            last_updated: p.updated_at || p.created_at || new Date().toISOString()
           };
         }
         coursesMap[p.course_name].post_count += 1;
+        coursesMap[p.course_name].notes.push(p);
+        coursesMap[p.course_name].total_modules = coursesMap[p.course_name].notes.length;
+        if (p.updated_at || p.created_at) {
+          coursesMap[p.course_name].last_updated = p.updated_at || p.created_at;
+        }
+      }
+    });
+
+    // 3. Sort child notes chronologically by created_at
+    Object.values(coursesMap).forEach(c => {
+      if (c.notes && c.notes.length > 0) {
+        c.notes.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
       }
     });
 

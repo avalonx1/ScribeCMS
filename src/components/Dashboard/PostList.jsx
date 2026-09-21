@@ -92,7 +92,7 @@ export default function PostList({
             className="group relative editorial-card rounded-2xl overflow-hidden cursor-pointer grid grid-cols-1 lg:grid-cols-12 gap-0 border border-zinc-800/80 hover:border-zinc-700 transition-all duration-300 shadow-xl"
           >
             {/* Feature Image Banner */}
-            <div className="lg:col-span-7 relative h-64 sm:h-80 lg:h-auto overflow-hidden bg-zinc-900">
+            <div className="lg:col-span-7 relative h-48 sm:h-72 lg:h-auto overflow-hidden bg-zinc-900">
               <img
                 src={getPostFeatureImage(highlightPost)}
                 alt={highlightPost.title}
@@ -115,26 +115,26 @@ export default function PostList({
             </div>
 
             {/* Content Side */}
-            <div className="lg:col-span-5 p-7 sm:p-9 flex flex-col justify-between bg-zinc-900/60 backdrop-blur-sm">
+            <div className="lg:col-span-5 p-5 sm:p-7 lg:p-9 flex flex-col justify-between bg-zinc-900/60 backdrop-blur-sm">
               <div>
                 {highlightPost.course_name && (
-                  <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium mb-3">
-                    <GraduationCap className="h-3.5 w-3.5" />
-                    <span>{highlightPost.course_name}</span>
+                  <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium mb-2.5">
+                    <GraduationCap className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{highlightPost.course_name}</span>
                     {highlightPost.module_name && (
                       <>
                         <span className="text-zinc-600">/</span>
-                        <span className="text-zinc-400">{highlightPost.module_name}</span>
+                        <span className="text-zinc-400 truncate">{highlightPost.module_name}</span>
                       </>
                     )}
                   </div>
                 )}
 
-                <h2 className="text-xl sm:text-2xl font-bold text-white group-hover:text-emerald-400 transition-colors tracking-tight leading-snug mb-3">
+                <h2 className="text-lg sm:text-2xl font-bold text-white group-hover:text-emerald-400 transition-colors tracking-tight leading-snug mb-2 sm:mb-3">
                   {highlightPost.title}
                 </h2>
 
-                <p className="text-sm text-zinc-400 line-clamp-3 leading-relaxed mb-6 font-normal">
+                <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 sm:line-clamp-3 leading-relaxed mb-4 sm:mb-6 font-normal">
                   {highlightPost.summary || highlightPost.content.replace(/#|\*|`|<[^>]*>/g, '').slice(0, 180) + '...'}
                 </p>
 
@@ -150,15 +150,15 @@ export default function PostList({
               </div>
 
               {/* Bottom Meta & Action */}
-              <div className="pt-5 border-t border-zinc-800/70 flex items-center justify-between text-xs text-zinc-400">
-                <div className="flex items-center gap-4">
-                  <span className="flex items-center gap-1.5">
-                    <Calendar className="h-3.5 w-3.5 text-zinc-500" />
-                    {new Date(highlightPost.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+              <div className="pt-4 sm:pt-5 border-t border-zinc-800/70 flex items-center justify-between text-xs text-zinc-400 flex-wrap gap-3">
+                <div className="flex items-center gap-3 text-[11px] sm:text-xs">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="h-3 w-3 text-zinc-500" />
+                    {new Date(highlightPost.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
                   </span>
-                  <span className="flex items-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5 text-zinc-500" />
-                    {highlightPost.reading_time || 1} mnt baca
+                  <span className="flex items-center gap-1">
+                    <Clock className="h-3 w-3 text-zinc-500" />
+                    {highlightPost.reading_time || 1} mnt
                   </span>
                 </div>
 
@@ -227,7 +227,7 @@ export default function PostList({
         </div>
 
         {viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {regularPosts.map((post) => {
               const featureImg = getPostFeatureImage(post);
               const hasVideo = post.content?.includes('<iframe') || post.content?.includes('<video');
@@ -339,17 +339,17 @@ export default function PostList({
                 <div
                   key={post.id}
                   onClick={() => onSelectPost(post)}
-                  className="p-4 hover:bg-zinc-850 cursor-pointer flex items-center justify-between gap-4 transition-colors group"
+                  className="p-3 sm:p-4 hover:bg-zinc-850 cursor-pointer flex items-center justify-between gap-3 sm:gap-4 transition-colors group"
                 >
-                  <div className="flex items-center gap-4 min-w-0">
-                    <div className="h-14 w-20 rounded-xl overflow-hidden bg-zinc-900 shrink-0 border border-zinc-800">
+                  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                    <div className="h-12 w-16 sm:h-14 sm:w-20 rounded-xl overflow-hidden bg-zinc-900 shrink-0 border border-zinc-800">
                       <img src={featureImg} alt="" className="h-full w-full object-cover group-hover:scale-105 transition-transform" />
                     </div>
                     <div className="min-w-0">
-                      <h4 className="text-sm font-semibold text-white group-hover:text-emerald-400 transition-colors truncate">
+                      <h4 className="text-xs sm:text-sm font-semibold text-white group-hover:text-emerald-400 transition-colors truncate">
                         {post.title}
                       </h4>
-                      <p className="text-xs text-zinc-400 truncate mt-0.5">
+                      <p className="text-[11px] sm:text-xs text-zinc-400 truncate mt-0.5">
                         {post.course_name ? `${post.course_name} · ` : ''}{post.summary || post.content.slice(0, 90)}
                       </p>
                     </div>

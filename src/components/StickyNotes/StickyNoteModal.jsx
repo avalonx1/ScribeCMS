@@ -152,7 +152,7 @@ export default function StickyNoteModal({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-6 bg-black/70 backdrop-blur-sm animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           handleSaveAndClose();
@@ -162,10 +162,10 @@ export default function StickyNoteModal({
     >
       <div 
         ref={modalRef}
-        className={`w-full max-w-2xl rounded-2xl border ${currentColorConfig.borderClass} ${currentColorConfig.bgClass} shadow-2xl flex flex-col max-h-[90vh] overflow-hidden transition-colors duration-200`}
+        className={`w-full max-w-2xl rounded-2xl border ${currentColorConfig.borderClass} ${currentColorConfig.bgClass} shadow-2xl flex flex-col max-h-[93vh] overflow-hidden transition-colors duration-200`}
       >
         {/* Header: Title, Checklist Mode Switcher & Pin button */}
-        <div className="flex items-start justify-between px-6 pt-5 pb-2 gap-3">
+        <div className="flex items-start justify-between px-4 sm:px-6 pt-4 sm:pt-5 pb-2 gap-2 sm:gap-3">
           <input
             type="text"
             placeholder="Judul catatan..."
@@ -224,7 +224,7 @@ export default function StickyNoteModal({
         </div>
 
         {/* Content Area */}
-        <div className="px-6 py-2 flex-1 overflow-y-auto">
+        <div className="px-4 sm:px-6 py-2 flex-1 overflow-y-auto">
           {viewMode === 'write' ? (
             /* Write Mode: Auto-expanding Textarea with smart Enter */
             <textarea
@@ -352,7 +352,7 @@ export default function StickyNoteModal({
 
         {/* Color Picker Drawer if open */}
         {showColorPicker && (
-          <div className="px-6 py-2 border-t border-white/5 bg-black/20 flex items-center gap-2 flex-wrap animate-fadeIn">
+          <div className="px-4 sm:px-6 py-2 border-t border-white/5 bg-black/20 flex items-center gap-2 flex-wrap animate-fadeIn">
             <span className="text-[11px] text-zinc-400 font-medium mr-1">Pilih Warna:</span>
             {NOTE_COLORS.map((c) => (
               <button
@@ -378,7 +378,7 @@ export default function StickyNoteModal({
         )}
 
         {/* Modal Footer: Action Bar */}
-        <div className="px-6 py-3.5 border-t border-white/5 bg-black/20 flex items-center justify-between gap-4">
+        <div className="px-4 sm:px-6 py-3 sm:py-3.5 border-t border-white/5 bg-black/20 flex items-center justify-between gap-2 sm:gap-4">
           <div className="flex items-center gap-1.5">
             {/* Checklist Button */}
             <button

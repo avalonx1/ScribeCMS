@@ -117,7 +117,7 @@ export default function StickyNoteCard({
             className={`p-1.5 rounded-lg transition-opacity shrink-0 ${
               note.is_pinned 
                 ? 'opacity-100 text-amber-400 bg-amber-500/10 hover:bg-amber-500/20' 
-                : 'opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-white hover:bg-white/10'
+                : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100 text-zinc-400 hover:text-white hover:bg-white/10'
             }`}
           >
             <Pin className={`h-3.5 w-3.5 ${note.is_pinned ? 'fill-amber-400 rotate-45' : ''}`} />
@@ -194,7 +194,7 @@ export default function StickyNoteCard({
                     if (onRemoveTag) onRemoveTag(note.id, tag);
                   }}
                   title="Hapus tag"
-                  className="opacity-0 group-hover:opacity-100 hover:text-rose-400 transition-opacity"
+                  className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:text-rose-400 transition-opacity"
                 >
                   <X className="h-2.5 w-2.5" />
                 </button>
@@ -204,9 +204,9 @@ export default function StickyNoteCard({
         )}
       </div>
 
-      {/* Card Footer Toolbar (Visible on hover & touch) */}
+      {/* Card Footer Toolbar (Visible on touch & desktop hover) */}
       <div 
-        className="pt-2 mt-auto border-t border-white/5 flex items-center justify-between gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+        className="pt-2 mt-auto border-t border-white/5 flex items-center justify-between gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-0.5">

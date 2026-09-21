@@ -17,7 +17,7 @@ export default function Sidebar({
   notesCount = 0
 }) {
   return (
-    <aside className="w-60 border-r border-zinc-800/80 bg-[#0b0f19] flex flex-col h-[calc(100vh-4rem)] sticky top-16 select-none shrink-0">
+    <aside className="hidden md:flex w-60 border-r border-zinc-800/80 bg-[#0b0f19] flex-col h-[calc(100vh-4rem)] sticky top-16 select-none shrink-0">
       
       {/* Navigation */}
       <div className="p-4 space-y-1">

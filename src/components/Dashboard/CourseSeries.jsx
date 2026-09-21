@@ -213,12 +213,12 @@ export default function CourseSeries({
               className="editorial-card rounded-2xl border border-zinc-800/80 overflow-hidden shadow-xl transition-all"
             >
               {/* 1. PARENT SERIES HEADER */}
-              <div className="p-5 sm:p-6 bg-zinc-900/60 border-b border-zinc-800/80">
+              <div className="p-4 sm:p-6 bg-zinc-900/60 border-b border-zinc-800/80">
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                   
                   {/* Left: Cover thumbnail & Series Info */}
-                  <div className="flex items-start gap-4 min-w-0 flex-1">
-                    <div className="relative h-20 w-32 sm:h-24 sm:w-36 rounded-xl overflow-hidden bg-zinc-950 shrink-0 border border-zinc-800 shadow-md">
+                  <div className="flex flex-col sm:flex-row items-start gap-3.5 sm:gap-4 min-w-0 flex-1">
+                    <div className="relative h-28 w-full sm:h-24 sm:w-36 rounded-xl overflow-hidden bg-zinc-950 shrink-0 border border-zinc-800 shadow-md">
                       <img 
                         src={seriesCoverImg} 
                         alt={course.course_name}
@@ -265,7 +265,7 @@ export default function CourseSeries({
                   </div>
 
                   {/* Right: Actions for Parent Series */}
-                  <div className="flex items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-zinc-800/60">
+                  <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-zinc-800/60 flex-wrap">
                     
                     {/* Edit Series (Name, Desc, Feature Image) Button */}
                     <button
@@ -274,7 +274,7 @@ export default function CourseSeries({
                       title="Edit Nama, Deskripsi & Feature Image Series ini"
                     >
                       <Edit3 className="h-3.5 w-3.5 text-emerald-400" />
-                      <span>Edit Series</span>
+                      <span>Edit</span>
                     </button>
 
                     {/* Add Child Note to this Series */}
@@ -284,7 +284,7 @@ export default function CourseSeries({
                       title="Tambah Catatan Anak ke Series Ini"
                     >
                       <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
-                      <span>+ Tambah Catatan</span>
+                      <span>+ Catatan</span>
                     </button>
 
                     {/* Toggle Child Notes Expand */}
@@ -303,12 +303,12 @@ export default function CourseSeries({
 
               {/* 2. CHILD NOTES SECTION (Visual Tree & Hierarchy) */}
               {isExpanded && (
-                <div className="p-5 sm:p-7 bg-[#0b0f19]/80">
+                <div className="p-3.5 sm:p-7 bg-[#0b0f19]/80">
                   
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
                     <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
-                      <FolderKanban className="h-3.5 w-3.5 text-emerald-400" />
-                      <span>Isi Modul & Catatan Anak ({childCount} Catatan):</span>
+                      <FolderKanban className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                      <span className="truncate">Modul & Catatan ({childCount}):</span>
                     </span>
 
                     <button
@@ -322,7 +322,7 @@ export default function CourseSeries({
 
                   {/* Child Notes Tree */}
                   {notes.length > 0 ? (
-                    <div className="relative border-l-2 border-emerald-500/25 ml-4 sm:ml-6 pl-5 sm:pl-7 space-y-3.5 py-1">
+                    <div className="relative border-l-2 border-emerald-500/25 ml-2.5 sm:ml-6 pl-3.5 sm:pl-7 space-y-3.5 py-1">
                       {notes.map((note, noteIdx) => {
                         const noteDate = new Date(note.created_at).toLocaleDateString('id-ID', {
                           day: 'numeric',
@@ -333,11 +333,11 @@ export default function CourseSeries({
                         return (
                           <div
                             key={note.id || noteIdx}
-                            className="group/note relative p-4 rounded-xl bg-zinc-900/50 hover:bg-zinc-850 border border-zinc-800/80 hover:border-zinc-700 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm"
+                            className="group/note relative p-3.5 sm:p-4 rounded-xl bg-zinc-900/50 hover:bg-zinc-850 border border-zinc-800/80 hover:border-zinc-700 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm"
                           >
                             {/* Branch connector line from left parent tree */}
-                            <span className="absolute -left-[29px] sm:-left-[37px] top-1/2 -translate-y-1/2 w-4 sm:w-6 h-px bg-emerald-500/30" />
-                            <span className="absolute -left-[32px] sm:-left-[40px] top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-zinc-950" />
+                            <span className="absolute -left-[16px] sm:-left-[37px] top-1/2 -translate-y-1/2 w-3.5 sm:w-6 h-px bg-emerald-500/30" />
+                            <span className="absolute -left-[19px] sm:-left-[40px] top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-zinc-950" />
 
                             {/* Note Information */}
                             <div 
@@ -413,9 +413,9 @@ export default function CourseSeries({
                         onClick={() => onNewPostInSeries(course.course_name)}
                         className="w-full relative flex items-center justify-center gap-2 p-3 rounded-xl border border-dashed border-zinc-800 hover:border-emerald-500/40 bg-zinc-900/20 hover:bg-zinc-900/60 text-xs font-medium text-zinc-400 hover:text-emerald-300 transition-all group"
                       >
-                        <span className="absolute -left-[29px] sm:-left-[37px] top-1/2 -translate-y-1/2 w-4 sm:w-6 h-px bg-emerald-500/30" />
+                        <span className="absolute -left-[16px] sm:-left-[37px] top-1/2 -translate-y-1/2 w-3.5 sm:w-6 h-px bg-emerald-500/30" />
                         <Plus className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" />
-                        <span>+ Tambah Catatan / Modul Baru ke "{course.course_name}"</span>
+                        <span className="truncate">+ Tambah Catatan Baru ke "{course.course_name}"</span>
                       </button>
 
                     </div>

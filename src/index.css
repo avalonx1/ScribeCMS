@@ -25,6 +25,15 @@
   background: #3f3f46;
 }
 
+/* Hide scrollbar utility for touch/mobile carousels and toolbars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Simple Elegant Cards */
 .editorial-card {
   background: #111625;
@@ -98,11 +107,11 @@
 }
 
 .markdown-body table {
-  @apply w-full text-left border-collapse my-6 rounded-lg overflow-hidden border border-zinc-800;
+  @apply w-full text-left border-collapse my-6 rounded-lg overflow-x-auto block border border-zinc-800;
 }
 
 .markdown-body th {
-  @apply bg-zinc-900 px-4 py-3 font-semibold text-zinc-200 border-b border-zinc-800 text-sm;
+  @apply bg-zinc-900 px-4 py-3 font-semibold text-zinc-200 border-b border-zinc-800 text-sm whitespace-nowrap;
 }
 
 .markdown-body td {
@@ -118,9 +127,9 @@
 }
 
 .markdown-body img {
-  @apply rounded-xl max-w-full my-6 shadow-md border border-zinc-800 mx-auto transition-transform;
+  @apply rounded-xl max-w-full h-auto my-6 shadow-md border border-zinc-800 mx-auto transition-transform;
 }
 
 .markdown-body iframe, .markdown-body video {
-  @apply rounded-xl shadow-xl border border-zinc-800 my-6;
+  @apply rounded-xl shadow-xl border border-zinc-800 my-6 max-w-full;
 }

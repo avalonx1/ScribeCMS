@@ -65,6 +65,8 @@ export default function MarkdownEditor({
 
   // Editor View Layout: 'split' | 'edit' | 'preview'
   const [viewLayout, setViewLayout] = useState('split');
+  // Mobile Tab: 'edit' | 'preview' | 'settings'
+  const [mobileTab, setMobileTab] = useState('edit');
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [pasteBanner, setPasteBanner] = useState(null);
 
@@ -203,21 +205,47 @@ export default function MarkdownEditor({
     <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden bg-[#0b0f19]">
       
       {/* Top Bar */}
-      <div className="h-14 border-b border-zinc-800/80 bg-zinc-950/80 px-6 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3">
+      <div className="h-14 border-b border-zinc-800/80 bg-zinc-950/80 px-4 sm:px-6 flex items-center justify-between shrink-0 gap-2">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <button
             onClick={onCancel}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors shrink-0"
+            title="Kembali"
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
-          <span className="text-xs font-semibold text-zinc-300">
-            {isEditing ? 'Edit Catatan' : 'Tulis Catatan / Modul Baru'}
+          <span className="text-xs font-semibold text-zinc-300 truncate hidden xs:inline">
+            {isEditing ? 'Edit Catatan' : 'Tulis Catatan'}
           </span>
         </div>
 
-        {/* Layout toggle */}
-        <div className="flex items-center gap-1 bg-zinc-900 border border-zinc-800 rounded-lg p-0.5 text-xs">
+        {/* Mobile 3-Tab Switcher (< lg) */}
+        <div className="flex lg:hidden items-center gap-0.5 bg-zinc-900 border border-zinc-800 rounded-lg p-0.5 text-xs">
+          <button
+            type="button"
+            onClick={() => setMobileTab('edit')}
+            className={`px-2.5 py-1 rounded-md transition-colors ${mobileTab === 'edit' ? 'bg-zinc-800 text-white font-medium' : 'text-zinc-400 hover:text-white'}`}
+          >
+            Tulis
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileTab('preview')}
+            className={`px-2.5 py-1 rounded-md transition-colors ${mobileTab === 'preview' ? 'bg-zinc-800 text-white font-medium' : 'text-zinc-400 hover:text-white'}`}
+          >
+            Lihat
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileTab('settings')}
+            className={`px-2.5 py-1 rounded-md transition-colors ${mobileTab === 'settings' ? 'bg-zinc-800 text-white font-medium' : 'text-zinc-400 hover:text-white'}`}
+          >
+            Opsi
+          </button>
+        </div>
+
+        {/* Desktop Layout toggle (>= lg) */}
+        <div className="hidden lg:flex items-center gap-1 bg-zinc-900 border border-zinc-800 rounded-lg p-0.5 text-xs">
           <button
             onClick={() => setViewLayout('edit')}
             className={`px-3 py-1 rounded-md transition-colors ${viewLayout === 'edit' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-white'}`}
@@ -242,10 +270,10 @@ export default function MarkdownEditor({
         <button
           onClick={handleFormSubmit}
           disabled={saving}
-          className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold text-zinc-950 bg-white hover:bg-zinc-200 transition-colors disabled:opacity-50"
+          className="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-1.5 rounded-xl text-xs font-semibold text-zinc-950 bg-white hover:bg-zinc-200 transition-colors disabled:opacity-50 shrink-0"
         >
           <Save className="h-3.5 w-3.5" />
-          <span>{saving ? 'Menyimpan...' : 'Simpan'}</span>
+          <span>{saving ? '...' : 'Simpan'}</span>
         </button>
       </div>
 
@@ -265,22 +293,22 @@ export default function MarkdownEditor({
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden">
         
-        {/* Editor & Preview Column */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Editor & Preview Column (Hidden on mobile if Settings tab is active) */}
+        <div className={`flex-1 flex-col overflow-hidden ${mobileTab === 'settings' ? 'hidden lg:flex' : 'flex'}`}>
           
           {/* Title Input */}
-          <div className="p-6 pb-2 border-b border-zinc-800/60 bg-[#0b0f19] shrink-0">
+          <div className="p-4 sm:p-6 pb-2 border-b border-zinc-800/60 bg-[#0b0f19] shrink-0">
             <input
               type="text"
               placeholder="Judul Materi atau Catatan Jurnal..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-transparent text-2xl font-bold text-white placeholder-zinc-600 focus:outline-none tracking-tight"
+              className="w-full bg-transparent text-xl sm:text-2xl font-bold text-white placeholder-zinc-600 focus:outline-none tracking-tight"
             />
           </div>
 
           {/* Minimal Toolbar */}
-          <div className="px-6 py-2 border-b border-zinc-800/60 bg-zinc-900/30 flex items-center gap-1 overflow-x-auto text-zinc-400 text-xs shrink-0">
+          <div className="px-4 sm:px-6 py-2 border-b border-zinc-800/60 bg-zinc-900/30 flex items-center gap-1 overflow-x-auto text-zinc-400 text-xs shrink-0 no-scrollbar whitespace-nowrap">
             <button onClick={() => insertText('# ', '')} className="p-1.5 rounded hover:bg-zinc-800 hover:text-white" title="H1">
               <Heading1 className="h-4 w-4" />
             </button>
@@ -315,58 +343,72 @@ export default function MarkdownEditor({
             <div className="h-4 w-px bg-zinc-800 mx-1" />
             <button
               onClick={() => setIsVideoModalOpen(true)}
-              className="flex items-center gap-1 px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium transition-colors"
+              className="flex items-center gap-1 px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium transition-colors shrink-0"
             >
               <Video className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Embed Video</span>
+              <span>Video</span>
             </button>
-            <label className="flex items-center gap-1 px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium cursor-pointer transition-colors">
+            <label className="flex items-center gap-1 px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium cursor-pointer transition-colors shrink-0">
               <Upload className="h-3.5 w-3.5 text-zinc-400" />
-              <span>Sisipkan Gambar</span>
+              <span>Gambar</span>
               <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, false)} className="hidden" />
             </label>
           </div>
 
           {/* Viewports */}
           <div className="flex-1 flex overflow-hidden">
-            {(viewLayout === 'edit' || viewLayout === 'split') && (
-              <div className={`h-full flex flex-col ${viewLayout === 'split' ? 'w-1/2 border-r border-zinc-800/80' : 'w-full'}`}>
-                <textarea
-                  ref={textareaRef}
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  onPaste={handlePaste}
-                  placeholder="Ketik catatan Markdown di sini atau PASTE materi course dari website..."
-                  className="w-full h-full p-6 bg-[#0b0f19] font-mono text-sm leading-relaxed text-zinc-200 placeholder-zinc-600 resize-none focus:outline-none"
-                />
-              </div>
-            )}
+            {/* Editor Textarea */}
+            <div className={`h-full flex-col ${
+              viewLayout === 'split' 
+                ? 'w-full lg:w-1/2 lg:border-r lg:border-zinc-800/80' 
+                : 'w-full'
+            } ${
+              mobileTab === 'preview' ? 'hidden lg:flex' : (viewLayout === 'preview' ? 'hidden' : 'flex')
+            }`}>
+              <textarea
+                ref={textareaRef}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                onPaste={handlePaste}
+                placeholder="Ketik catatan Markdown di sini atau PASTE materi course dari website..."
+                className="w-full h-full p-4 sm:p-6 bg-[#0b0f19] font-mono text-xs sm:text-sm leading-relaxed text-zinc-200 placeholder-zinc-600 resize-none focus:outline-none"
+              />
+            </div>
 
-            {(viewLayout === 'preview' || viewLayout === 'split') && (
-              <div className={`h-full overflow-y-auto p-8 bg-zinc-950/40 ${viewLayout === 'split' ? 'w-1/2' : 'w-full'}`}>
-                <div className="max-w-3xl mx-auto">
-                  {coverImage && (
-                    <div className="rounded-2xl overflow-hidden aspect-[16/9] mb-8 bg-zinc-900 border border-zinc-800">
-                      <img src={coverImage} alt="Cover Preview" className="w-full h-full object-cover" />
-                    </div>
-                  )}
-                  <div className="markdown-body">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      rehypePlugins={[rehypeRaw, rehypeHighlight]}
-                    >
-                      {content || '*Preview Markdown akan muncul di sini...*'}
-                    </ReactMarkdown>
+            {/* Markdown Preview */}
+            <div className={`h-full overflow-y-auto p-4 sm:p-8 bg-zinc-950/40 ${
+              viewLayout === 'split' 
+                ? 'w-full lg:w-1/2' 
+                : 'w-full'
+            } ${
+              mobileTab === 'edit' ? 'hidden lg:block' : (viewLayout === 'edit' ? 'hidden' : 'block')
+            }`}>
+              <div className="max-w-3xl mx-auto">
+                {coverImage && (
+                  <div className="rounded-2xl overflow-hidden aspect-[16/9] mb-6 sm:mb-8 bg-zinc-900 border border-zinc-800">
+                    <img src={coverImage} alt="Cover Preview" className="w-full h-full object-cover" />
                   </div>
+                )}
+                <div className="markdown-body">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw, rehypeHighlight]}
+                  >
+                    {content || '*Preview Markdown akan muncul di sini...*'}
+                  </ReactMarkdown>
                 </div>
               </div>
-            )}
+            </div>
           </div>
 
         </div>
 
-        {/* Right Settings Sidebar */}
-        <div className="w-80 border-l border-zinc-800/80 bg-zinc-950/70 p-5 overflow-y-auto shrink-0 space-y-6 text-xs">
+        {/* Right Settings Sidebar (Full view on mobile if Settings tab is active) */}
+        <div className={`overflow-y-auto p-4 sm:p-5 space-y-6 text-xs bg-zinc-950/70 ${
+          mobileTab === 'settings' 
+            ? 'w-full block flex-1' 
+            : 'hidden lg:block lg:w-80 lg:shrink-0 lg:border-l lg:border-zinc-800/80'
+        }`}>
           
           {/* FEATURE IMAGE (COVER) MANAGEMENT */}
           <div>

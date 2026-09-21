@@ -248,7 +248,7 @@ export default function StickyNotesView({
   const quickBoxColor = getNoteColor(newColor);
 
   return (
-    <div className="p-6 sm:p-8 max-w-7xl mx-auto min-h-[calc(100vh-4rem)] flex flex-col">
+    <div className="p-4 sm:p-6 md:p-8 pb-24 md:pb-8 max-w-7xl mx-auto min-h-[calc(100vh-4rem)] flex flex-col">
       
       {/* Top Header: Title, Counts, Search & Tag Filters */}
       <div className="mb-8">

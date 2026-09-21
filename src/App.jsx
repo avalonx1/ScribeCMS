@@ -7,6 +7,8 @@ import CourseSeries from './components/Dashboard/CourseSeries';
 import MarkdownEditor from './components/Editor/MarkdownEditor';
 import PostDetail from './components/Reader/PostDetail';
 import StickyNotesView from './components/StickyNotes/StickyNotesView';
+import MobileDrawer from './components/MobileDrawer';
+import MobileBottomNav from './components/MobileBottomNav';
 import { storageService } from './services/storageService';
 
 export default function App() {
@@ -14,6 +16,7 @@ export default function App() {
   const [activeView, setActiveView] = useState('dashboard');
   const [selectedPost, setSelectedPost] = useState(null);
   const [editingPost, setEditingPost] = useState(null);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
   // Data States
   const [posts, setPosts] = useState([]);
@@ -297,6 +300,26 @@ export default function App() {
         storageMode={storageMode}
         onExportAll={handleExportAll}
         onImportData={handleImportData}
+        onOpenDrawer={() => setIsMobileDrawerOpen(true)}
+      />
+
+      {/* Mobile Drawer */}
+      <MobileDrawer
+        isOpen={isMobileDrawerOpen}
+        onClose={() => setIsMobileDrawerOpen(false)}
+        activeView={activeView}
+        setActiveView={setActiveView}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={(cat) => {
+          setSelectedCategory(cat);
+          setSelectedCourseFilter('');
+        }}
+        categories={categories}
+        stats={stats}
+        notesCount={notes.length}
+        storageMode={storageMode}
+        onExportAll={handleExportAll}
+        onImportData={handleImportData}
       />
 
       {/* Main App Layout */}
@@ -323,7 +346,7 @@ export default function App() {
           
           {/* 1. Dashboard View */}
           {activeView === 'dashboard' && (
-            <div className="p-8 max-w-7xl mx-auto">
+            <div className="p-4 sm:p-6 md:p-8 pb-24 md:pb-8 max-w-7xl mx-auto">
               
               {/* Course filter badge if active */}
               {selectedCourseFilter && (
@@ -363,7 +386,7 @@ export default function App() {
 
           {/* 2. Course Series View */}
           {activeView === 'courses' && (
-            <div className="p-8 max-w-7xl mx-auto">
+            <div className="p-4 sm:p-6 md:p-8 pb-24 md:pb-8 max-w-7xl mx-auto">
               <CourseSeries
                 courses={courses}
                 onSelectCourse={handleSelectCourse}
@@ -418,6 +441,15 @@ export default function App() {
         </main>
 
       </div>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <MobileBottomNav
+        activeView={activeView}
+        setActiveView={setActiveView}
+        onOpenDrawer={() => setIsMobileDrawerOpen(true)}
+        onNewPost={handleNewPost}
+        notesCount={notes.length}
+      />
 
     </div>
   );
